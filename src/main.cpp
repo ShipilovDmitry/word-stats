@@ -1,6 +1,10 @@
-#include <iostream>
+#include "utils.hpp"
 
-int main() {
-  std::cout << "Hello, world!" << std::endl;
+int main(int argc, char *argv[]) {
+  auto const cmdArguments = getCmdAgruments(argc, argv);
+  if (!cmdArguments) {
+    return -1;
+  }
+
   return 0;
 }
