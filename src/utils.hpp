@@ -2,12 +2,12 @@
 
 #include "types.hpp"
 
-#include <optional>
-#include <unordered_map>
+CmdArguments getCmdAgruments(int argc, char *argv[]);
 
-using StatsTable =
-    std::unordered_map<std::string, size_t>; // Order doesn't matter here
-
-std::optional<CmdArguments> getCmdAgruments(int argc, char *argv[]);
+void doLogic(int argc, char *argv[]);
 
 StatsTable getStatsTable(std::string const &input);
+
+PreparedOutput prepareOutput(StatsTable table);
+
+void writeOutputToFile(PreparedOutput output, std::string const &outputFile);

@@ -3,11 +3,11 @@
 #include <iostream>
 #include <stdexcept>
 
-std::optional<CmdArguments> getCmdAgruments(int argc, char *argv[]) {
+CmdArguments getCmdAgruments(int argc, char *argv[]) {
   if (argc != 3) {
     std::cerr << "Usage: " << argv[0] << " path/to/input.txt path/to/output.txt"
               << std::endl;
-    return std::nullopt;
+    throw std::logic_error{"Check args!"};
   }
 
   return CmdArguments{argv[1], argv[2]};
@@ -50,4 +50,32 @@ StatsTable getStatsTable(std::string const &input) {
   }
 
   return table;
+}
+
+PreparedOutput prepareOutput(StatsTable wordFrequency) {
+  std::set<std::pair<size_t, std::string>, CountDescLexicAscComparator> output;
+  for (auto &word : wordFrequency) {
+    output.emplace(word.second, std::move(word.first));
+  }
+  return output;
+}
+
+void writeOutputToFile(PreparedOutput output, std::string const &outputFile) {
+
+  std::ofstream fout(outputFile);
+  if (!fout.is_open()) {
+    std::cerr << "Error opening output file: " << outputFile << '\n';
+    throw std::logic_error{"Error opening output file"};
+  }
+
+  for (auto const &pair : output) {
+    fout << pair.first << ' ' << pair.second
+         << '\n'; // Don't flush IO buffer intentionally
+  }
+}
+
+void doLogic(int argc, char *argv[]) {
+  auto const cmdArgs = getCmdAgruments(argc, argv);
+  auto output = prepareOutput(getStatsTable(cmdArgs.inputFile));
+  writeOutputToFile(std::move(output), cmdArgs.outputFile);
 }
