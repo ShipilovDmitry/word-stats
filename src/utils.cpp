@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include <array>
 #include <cstddef>
 #include <fstream>
 #include <iostream>
