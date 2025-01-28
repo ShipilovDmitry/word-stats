@@ -11,29 +11,32 @@ CmdArguments getCmdAgruments(int argc, char *argv[]) {
     throw std::logic_error{"Check args!"};
   }
 
-  return CmdArguments{argv[1], argv[2]};
+  return {argv[1], argv[2]};
 };
 
-StatsTable readFromFile(std::ifstream &fin) {
-  StatsTable table;
+bool isLowercaseChar(char c) { return c >= 'a' && c <= 'z'; }
+bool isUppercaseChar(char c) { return c >= 'A' && c <= 'Z'; }
+
+StatsTable fillStatsFromFile(std::ifstream &fin) {
+  StatsTable stats;
   std::string word;
 
   constexpr size_t kChunkSize = 1024; // We can tune chunks size for efficiency
-  std::array<char, kChunkSize> chunks;
+  std::array<char, kChunkSize> buffer;
 
   // Do not read char by char for performance
   while (!fin.eof()) {
-    fin.read(chunks.data(), chunks.size());
+    fin.read(buffer.data(), buffer.size());
     auto const justRead = fin.gcount();
 
     for (size_t i = 0; i < justRead; ++i) {
-      auto const c = chunks[i];
-      if (c >= 'a' && c <= 'z') {
+      auto const c = buffer[i];
+      if (isLowercaseChar(c)) {
         word.push_back(c);
         continue;
       }
 
-      if (c >= 'A' && c <= 'Z') {
+      if (isUppercaseChar(c)) {
         word.push_back(std::tolower(c));
         continue;
       }
@@ -41,14 +44,14 @@ StatsTable readFromFile(std::ifstream &fin) {
       // We met not symbol
       // or reached end of file
       if (!word.empty()) {
-        ++table[word];
+        ++stats[word];
         word.clear();
         continue;
       }
     }
   }
 
-  return table;
+  return stats;
 }
 
 StatsTable getStatsTable(std::string const &input) {
@@ -57,7 +60,7 @@ StatsTable getStatsTable(std::string const &input) {
     std::cerr << "Incorrect input file!" << input << std::endl;
     throw std::logic_error{"Incorrect input file!"};
   }
-  return readFromFile(fin);
+  return fillStatsFromFile(fin);
 }
 
 PreparedOutput prepareOutput(StatsTable wordFrequency) {
@@ -69,7 +72,6 @@ PreparedOutput prepareOutput(StatsTable wordFrequency) {
 }
 
 void writeOutputToFile(PreparedOutput output, std::string const &outputFile) {
-
   std::ofstream fout(outputFile);
   if (!fout.is_open()) {
     std::cerr << "Error opening output file: " << outputFile << '\n';
