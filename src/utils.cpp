@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -13,43 +14,50 @@ CmdArguments getCmdAgruments(int argc, char *argv[]) {
   return CmdArguments{argv[1], argv[2]};
 };
 
+StatsTable readFromFile(std::ifstream &fin) {
+  StatsTable table;
+  std::string word;
+
+  constexpr size_t kChunkSize = 1024; // We can tune chunks size for efficiency
+  std::array<char, kChunkSize> chunks;
+
+  // Do not read char by char for performance
+  while (!fin.eof()) {
+    fin.read(chunks.data(), chunks.size());
+    auto const justRead = fin.gcount();
+
+    for (size_t i = 0; i < justRead; ++i) {
+      auto const c = chunks[i];
+      if (c >= 'a' && c <= 'z') {
+        word.push_back(c);
+        continue;
+      }
+
+      if (c >= 'A' && c <= 'Z') {
+        word.push_back(std::tolower(c));
+        continue;
+      }
+
+      // We met not symbol
+      // or reached end of file
+      if (!word.empty()) {
+        ++table[word];
+        word.clear();
+        continue;
+      }
+    }
+  }
+
+  return table;
+}
+
 StatsTable getStatsTable(std::string const &input) {
   std::ifstream fin(input);
   if (!fin.is_open()) {
     std::cerr << "Incorrect input file!" << input << std::endl;
     throw std::logic_error{"Incorrect input file!"};
   }
-
-  StatsTable table;
-  std::string word;
-
-  // TODO read more intellectual, use chunks of 1KB
-  while (!fin.eof()) {
-    // Do we need check for fin.fail() or fin.bad()?
-
-    // It is possible to use std::alpa()
-    // but we don't want to cal `tolower` on lowe case letters
-    char const c = fin.get();
-    if (c >= 'a' && c <= 'z') {
-      word.push_back(c);
-      continue;
-    }
-
-    if (c >= 'A' && c <= 'Z') {
-      word.push_back(std::tolower(c));
-      continue;
-    }
-
-    // We met not symbol
-    // or reached end of file
-    if (!word.empty()) {
-      ++table[word];
-      word.clear();
-      continue;
-    }
-  }
-
-  return table;
+  return readFromFile(fin);
 }
 
 PreparedOutput prepareOutput(StatsTable wordFrequency) {
