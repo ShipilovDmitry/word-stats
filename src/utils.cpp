@@ -29,7 +29,7 @@ StatsTable fillStatsFromFile(std::ifstream &fin) {
   // Do not read char by char for performance
   while (!fin.eof()) {
     fin.read(buffer.data(), buffer.size());
-    auto const justRead = fin.gcount();
+    size_t const justRead = fin.gcount();
 
     for (size_t i = 0; i < justRead; ++i) {
       auto const c = buffer[i];
