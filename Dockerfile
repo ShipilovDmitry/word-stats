@@ -10,4 +10,8 @@ COPY . /home/avito/
 RUN cmake -Bbuild \
     && cmake --build build
 
+# Uncomment if needed
+# COPY input.txt /home/avito/build/bin
+# COPY output.txt /home/avito/build/bin
+
 ENTRYPOINT [ "bash" ]
