@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+namespace word_stats {
+
 struct CmdArguments {
   std::string inputFile;
   std::string outputFile;
@@ -25,3 +27,4 @@ struct CountDescLexicAscComparator {
 
 using PreparedOutput =
     std::set<std::pair<size_t, std::string>, CountDescLexicAscComparator>;
+} // namespace word_stats

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace word_stats {
+
 CmdArguments getCmdAgruments(int argc, char *argv[]) {
   if (argc != 3) {
     std::cerr << "Usage: " << argv[0] << " path/to/input.txt path/to/output.txt"
@@ -89,3 +91,4 @@ void doLogic(int argc, char *argv[]) {
   auto output = prepareOutput(getStatsTable(cmdArgs.inputFile));
   writeOutputToFile(std::move(output), cmdArgs.outputFile);
 }
+} // namespace word_stats
