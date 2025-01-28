@@ -20,11 +20,10 @@ StatsTable getStatsTable(std::string const &input) {
     throw std::logic_error{"Incorrect input file!"};
   }
 
-    using StatsTable = std::map<std::string, size_t>;
   StatsTable table;
   std::string word;
 
-  // TODO read more intellectual, not byte by byte
+  // TODO read more intellectual, use chunks of 1KB
   while (!fin.eof()) {
     // Do we need check for fin.fail() or fin.bad()?
 

@@ -10,17 +10,21 @@ int main(int argc, char *argv[]) {
   }
 
   auto wordFrequency = getStatsTable(cmdArguments->inputFile);
-  struct MyCmp {
+
+  struct CustomComparator {
     bool operator()(std::pair<size_t, std::string> const &lhs,
                     std::pair<size_t, std::string> const &rhs) const {
-      return lhs.first > rhs.first || lhs.second < rhs.second;
+      if (lhs.first == rhs.first) {
+        return lhs.second < rhs.second;
+      }
+
+      return lhs.first > rhs.first;
     }
   };
 
-  // TODO rename 
-  std::set<std::pair<size_t, std::string>, MyCmp> convenient;
+  std::set<std::pair<size_t, std::string>, CustomComparator> preparedOutput;
   for (auto &word : wordFrequency) {
-    convenient.emplace(word.second, std::move(word.first));
+    preparedOutput.emplace(word.second, std::move(word.first));
   }
 
   std::ofstream fout(cmdArguments->outputFile);
@@ -30,7 +34,7 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  for (const auto &pair : convenient) {
+  for (const auto &pair : preparedOutput) {
     fout << pair.first << ' ' << pair.second
          << '\n'; // Don't flush IO buffer intentionally
   }

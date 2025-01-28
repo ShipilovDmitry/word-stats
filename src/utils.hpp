@@ -3,9 +3,10 @@
 #include "types.hpp"
 
 #include <optional>
-#include <map>
+#include <unordered_map>
 
-using StatsTable = std::map<std::string, size_t>;
+using StatsTable =
+    std::unordered_map<std::string, size_t>; // Order doesn't matter here
 
 std::optional<CmdArguments> getCmdAgruments(int argc, char *argv[]);
 
