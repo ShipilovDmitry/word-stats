@@ -2,9 +2,9 @@
 
 #include "types.hpp"
 
-CmdArguments getCmdAgruments(int argc, char *argv[]);
-
 void doLogic(int argc, char *argv[]);
+
+CmdArguments getCmdAgruments(int argc, char *argv[]);
 
 StatsTable getStatsTable(std::string const &input);
 
