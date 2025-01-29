@@ -7,7 +7,7 @@ WORKDIR /home/avito
  
 COPY . /home/avito/
 
-RUN cmake -Bbuild \
+RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build
 
 # Uncomment if needed
