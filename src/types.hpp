@@ -18,10 +18,10 @@ struct CountDescLexicAscComparator {
   bool operator()(std::pair<size_t, std::string> const &lhs,
                   std::pair<size_t, std::string> const &rhs) const {
     if (lhs.first == rhs.first) {
-      return lhs.second < rhs.second;
+      return lhs.second < rhs.second; // Sort lexicographically
     }
 
-    return lhs.first > rhs.first;
+    return lhs.first > rhs.first; // Sort by count
   }
 };
 

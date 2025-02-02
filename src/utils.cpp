@@ -58,12 +58,13 @@ StatsTable fillStatsFromFile(std::ifstream &fin) {
         continue;
       }
 
-      // We met not symbol
-      // or reached end of file
-      if (!word.empty()) {
-        ++stats[word];
-        word.clear();
+      if (word.empty()) {
+        // Skip not latin symbols
+        continue;
       }
+
+      ++stats[word];
+      word.clear();
     }
   }
 
@@ -74,31 +75,25 @@ StatsTable fillStatsFromFileSlow(std::ifstream &fin) {
   StatsTable stats;
   std::string word;
 
-  // Do not read char by char for performance
-  while (!fin.eof())
-    while (!fin.eof()) {
-      // Do we need check for fin.fail() or fin.bad()?
-
-      // It is possible to use std::alpa()
-      // but we don't want to cal `tolower` on lowe case letters
-      char const c = fin.get();
-      if (c >= 'a' && c <= 'z') {
-        word.push_back(c);
-        continue;
-      }
-
-      if (c >= 'A' && c <= 'Z') {
-        word.push_back(std::tolower(c));
-        continue;
-      }
-
-      // We met not symbol
-      // or reached end of file
-      if (!word.empty()) {
-        ++stats[word];
-        word.clear();
-      }
+  while (!fin.eof()) {
+    char const c = fin.get();
+    if (c >= 'a' && c <= 'z') {
+      word.push_back(c);
+      continue;
     }
+
+    if (c >= 'A' && c <= 'Z') {
+      word.push_back(std::tolower(c));
+      continue;
+    }
+
+    if (word.empty()) {
+      continue;
+    }
+
+    ++stats[word];
+    word.clear();
+  }
 
   return stats;
 }
@@ -113,8 +108,8 @@ StatsTable getStatsTable(std::string const &input) {
 }
 
 PreparedOutput prepareOutput(StatsTable wordFrequency) {
-  std::set<std::pair<size_t, std::string>, CountDescLexicAscComparator> output;
-  for (auto &word : wordFrequency) {
+  PreparedOutput output;
+  for (auto &word : wordFrequency) { // non const because of std::move
     output.emplace(word.second, std::move(word.first));
   }
   return output;
