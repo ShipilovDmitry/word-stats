@@ -1,11 +1,25 @@
 #include "utils.hpp"
 #include <array>
+#include <chrono>
 #include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 
 namespace word_stats {
+
+ExecuteDuration::ExecuteDuration() {
+  m_start = std::chrono::high_resolution_clock::now();
+}
+
+ExecuteDuration::~ExecuteDuration() {
+  auto finish = std::chrono::high_resolution_clock::now();
+  std::cout << "Duration: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(finish -
+                                                                     m_start)
+                   .count()
+            << " ms" << std::endl;
+}
 
 CmdArguments getCmdAgruments(int argc, char *argv[]) {
   if (argc != 3) {
@@ -49,10 +63,42 @@ StatsTable fillStatsFromFile(std::ifstream &fin) {
       if (!word.empty()) {
         ++stats[word];
         word.clear();
-        continue;
       }
     }
   }
+
+  return stats;
+}
+
+StatsTable fillStatsFromFileSlow(std::ifstream &fin) {
+  StatsTable stats;
+  std::string word;
+
+  // Do not read char by char for performance
+  while (!fin.eof())
+    while (!fin.eof()) {
+      // Do we need check for fin.fail() or fin.bad()?
+
+      // It is possible to use std::alpa()
+      // but we don't want to cal `tolower` on lowe case letters
+      char const c = fin.get();
+      if (c >= 'a' && c <= 'z') {
+        word.push_back(c);
+        continue;
+      }
+
+      if (c >= 'A' && c <= 'Z') {
+        word.push_back(std::tolower(c));
+        continue;
+      }
+
+      // We met not symbol
+      // or reached end of file
+      if (!word.empty()) {
+        ++stats[word];
+        word.clear();
+      }
+    }
 
   return stats;
 }

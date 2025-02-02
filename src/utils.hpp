@@ -1,8 +1,18 @@
 #pragma once
 
 #include "types.hpp"
+#include <chrono>
 
 namespace word_stats {
+
+class ExecuteDuration {
+public:
+  ExecuteDuration();
+  ~ExecuteDuration();
+
+private:
+  std::chrono::high_resolution_clock::time_point m_start;
+};
 
 void doLogic(int argc, char *argv[]);
 
