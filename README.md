@@ -7,7 +7,7 @@ Count word stats
 Из корня репозитория выполнить команды:
 
 ```sh
-cmake -Bbuild -DCMAKE_BUILD_TYPE=Released
+cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
 cmake --build build/
 ./build/bin/word-stats input.txt output.txt
 ```
