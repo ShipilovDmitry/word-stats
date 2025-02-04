@@ -69,12 +69,6 @@ StatsTable fillStatsFromFile(std::ifstream &fin) {
 }
 
 StatsTable getStatsTable(std::string const &input) {
-  std::ifstream fin(input);
-  if (!fin.is_open()) {
-    std::cerr << "Incorrect input file!" << input << std::endl;
-    throw std::logic_error{"Incorrect input file!"};
-  }
-
   return fillStatsFromFileAsync(input);
 }
 
